@@ -26,10 +26,10 @@ app.use(
 )
 
 function authMid(req, res, next) {
-    if(req.session.user){
-        next();
-    }else{
+    if(!req.session.user){
         res.redirect("/login");
+    }else{
+        next();
     }
 }
 
@@ -43,20 +43,33 @@ function loginMiddleware(req, res, next){
 
 app.get("/", authMid, (req, res) => {
     
-    res.sendFile(path.join(__dirname, "/public/index.html"));
+    res.sendFile(path.join(__dirname, "./public","index.html"));
 })
 
 app.get('/login', loginMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, "./public", "/login.html"));
 })
 
+app.get('/logout'/* , authMid  */,(req, res)=>{
+    res.sendFile(path.join(__dirname, "./public", "/logout.html"));
+})
+
 app.post('/process-login',(req, res)=>{
-    console.log('req',req.body)
     req.session.user = req.body.username
     res.redirect('/')
 })
-app.get('/user-info',(req, res)=>{
-  res.json({username: req.session.user})
+app.get('/usuario',(req, res)=>{
+    res.json({username : req.session.user})
+})
+
+app.post("/salir", (req, res) => {
+    
+     res.redirect('/logout') 
+})
+
+app.get('/deslogeo',(req, res)=>{
+    console.log("Deslogeo", req.session.user)
+    res.json({username : req.session.user})
 })
 
 app.listen(8080, () => {
