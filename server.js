@@ -50,25 +50,27 @@ app.get('/login', loginMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, "./public", "/login.html"));
 })
 
-app.get('/logout'/* , authMid  */,(req, res)=>{
-    res.sendFile(path.join(__dirname, "./public", "/logout.html"));
-})
+app.get('/logout',authMid,(req, res)=>{
+    let user= req.session.user
+    req.session.destroy(err=>{
+        if(err){
+        console.log('error en el Logout:', err)
+        }else{
+        res.send(`<h1>La sesion de ${user} ha finalizado! Gracias por su visita!</h1>
+        <script type="text/javascript">
+        setTimeout(function(){ location.href = '/login'},2000)
+        </script>`)
+        }
+    })
+});
+
 
 app.post('/process-login',(req, res)=>{
     req.session.user = req.body.username
     res.redirect('/')
 })
+
 app.get('/usuario',(req, res)=>{
-    res.json({username : req.session.user})
-})
-
-app.post("/salir", (req, res) => {
-    
-     res.redirect('/logout') 
-})
-
-app.get('/deslogeo',(req, res)=>{
-    console.log("Deslogeo", req.session.user)
     res.json({username : req.session.user})
 })
 
